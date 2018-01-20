@@ -1,10 +1,14 @@
 ---
 - name: download c7 container
   command: "pveam download local centos-7-default_20171212_amd64.tar.xz"
+  args:
+    creates: "/var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz"
 - name: create host {{ hostname }}
   command: "pct create {{ vmid }} /var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz -storage local-zfs -hostname {{ hostname }} -net0 name=eth0,bridge=vmbr0,ip=dhcp -onboot 1"
+  args:
+    creates: "/etc/pve/lxc/{{ vmid }}.conf"
 - name: start container
-  shell: "pct start {{ vmid }}"
+  shell: "{ pct status {{ vmid }} | grep running ; } || pct start {{ vmid }}"
 - name: wait for networking to come up
   pause:
     seconds: 10
@@ -19,4 +23,4 @@
 - name: start ssh server
   command: "pct exec {{ vmid }} -- systemctl start sshd"
 - name: install ipa
-  command: "pct exec {{ vmid }} -- ipa-client-install -U --domain={{ ipa_domain }} --mkhomedir -w {{ ipa_password }} -p {{ ipa_username }}"
+  command: "pct exec {{ vmid }} -- bash -c \"getent passwd admin || ipa-client-install -U --domain={{ ipa_domain }} --mkhomedir -w {{ ipa_password }} -p {{ ipa_username }}\""
