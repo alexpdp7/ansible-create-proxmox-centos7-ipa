@@ -1,0 +1,22 @@
+---
+- name: download c7 container
+  command: "pveam download local centos-7-default_20171212_amd64.tar.xz"
+- name: create host {{ hostname }}
+  command: "pct create {{ vmid }} /var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz -storage local-zfs -hostname {{ hostname }} -net0 name=eth0,bridge=vmbr0,ip=dhcp -onboot 1"
+- name: start container
+  shell: "pct start {{ vmid }}"
+- name: wait for networking to come up
+  pause:
+    seconds: 10
+- name: set root password
+  command: "pct exec {{ vmid }} -- chpasswd"
+  args:
+    stdin: "root:{{ root_password }}"
+- name: install ssh ipa sudo
+  command: "pct exec {{ vmid }} -- yum install -y openssh-server ipa-client sudo"
+- name: enable ssh server
+  command: "pct exec {{ vmid }} -- systemctl enable sshd"
+- name: start ssh server
+  command: "pct exec {{ vmid }} -- systemctl start sshd"
+- name: install ipa
+  command: "pct exec {{ vmid }} -- ipa-client-install -U --domain={{ ipa_domain }} --mkhomedir -w {{ ipa_password }} -p {{ ipa_username }}"
