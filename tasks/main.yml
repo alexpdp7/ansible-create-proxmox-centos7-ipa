@@ -4,7 +4,7 @@
   args:
     creates: "/var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz"
 - name: create host {{ hostname }}
-  command: "pct create {{ vmid }} /var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz -storage local-zfs -hostname {{ hostname }} -net0 name=eth0,bridge=vmbr0,ip=dhcp -onboot 1 -memory {{ memory|default(512) }}"
+  command: "pct create {{ vmid }} /var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz -storage local-zfs -hostname {{ hostname }} -net0 name=eth0,bridge=vmbr0,ip=dhcp -onboot 1 -memory {{ memory|default(512) }} -swap {{ swap|default(512) }}"
   args:
     creates: "/etc/pve/lxc/{{ vmid }}.conf"
 - name: start container
