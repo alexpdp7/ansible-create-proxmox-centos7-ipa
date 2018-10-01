@@ -24,3 +24,8 @@
   command: "pct exec {{ vmid }} -- systemctl start sshd"
 - name: install ipa
   command: "pct exec {{ vmid }} -- bash -c \"getent passwd admin || ipa-client-install -U --domain={{ ipa_domain }} --mkhomedir -w {{ ipa_password }} -p {{ ipa_username }}\""
+# https://bugzilla.redhat.com/show_bug.cgi?id=1593462
+- name: restart dbus
+  command: "pct exec {{ vmid }} -- systemctl restart dbus"
+- name: restart oddjobd
+  command: "pct exec {{ vmid }} -- systemctl restart oddjobd"
