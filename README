@@ -1,0 +1,32 @@
+Just a small task to provision a Proxmox LXC container joined to FreeIPA.
+
+Typical Playbook usage:
+
+---
+- hosts: <promox host>
+  tasks:
+    - include_role:
+        name: create-proxmox-centos7-ipa
+      vars:
+        hostname: <hostname>
+        vmid: "{{ hostvars['<hostname>']['proxmox_vmid'] }}"
+        root_password: "{{ hostvars['<hostname>']['root_password'] }}"
+        ipa_domain: "{{ ipa_domain_name }}"
+        ipa_username: admin
+        ipa_password: "{{ ipa_admin_password }}"
+
+I keep IPA data on group_vars/all/(vars|vault) and proxmox_vmid/root_password on
+host_vars/<host>/(vars|vault).
+
+I only need a single line in the inventory for each host's hostname, and I put:
+
+ansible_become: True
+ansible_user: <my ipa username>
+
+in the host's variables to connect.
+
+I use DHCP/DNS so IP configuration is automatic and I can access the containers
+using their hostname.
+
+You can use extra vars such as memory/swap to set up memory and swap allocation
+and extra_opts for extra options for pct_create.
