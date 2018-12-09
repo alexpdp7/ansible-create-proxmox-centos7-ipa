@@ -4,9 +4,24 @@
   args:
     creates: "/var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz"
 - name: create host {{ hostname }}
-  command: "pct create {{ vmid }} /var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz -storage local-zfs -hostname {{ hostname }} -net0 name=eth0,bridge=vmbr0,ip=dhcp -onboot 1 -memory {{ memory|default(512) }} -swap {{ swap|default(512) }} {{ extra_opts|default() }}"
+  command: "pct create {{ vmid }} /var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz -storage local-zfs -hostname {{ hostname }} -net0 name=eth0,bridge=vmbr0,ip=dhcp -onboot 1 -memory {{ memory|default(512) }} -swap {{ swap|default(512) }} -features nesting=1,keyctl=1 --unprivileged {{ extra_opts|default() }}"
   args:
     creates: "/etc/pve/lxc/{{ vmid }}.conf"
+- name: set id mappings {{ hostname }} copy out
+  copy:
+    remote_src: yes
+    src: "/etc/pve/lxc/{{ vmid }}.conf"
+    dest: /tmp/cpci
+- name: set id mappings {{ hostname }}
+  blockinfile:
+    path: /tmp/cpci
+    block: |
+      lxc.idmap = u 0 100000 65536
+      lxc.idmap = g 0 100000 65536
+      lxc.idmap = u {{ ipa_idrange_start }} {{ ipa_idrange_start }} {{ ipa_idrange_size }}
+      lxc.idmap = g {{ ipa_idrange_start }} {{ ipa_idrange_start }} {{ ipa_idrange_size }}
+- name: set id mappings {{ hostname }} copy in
+  command: "cp /tmp/cpci /etc/pve/lxc/{{ vmid }}.conf"
 - name: start container
   shell: "{ pct status {{ vmid }} | grep running ; } || pct start {{ vmid }}"
 - name: wait for networking to come up
