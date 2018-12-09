@@ -43,5 +43,8 @@
 # https://bugzilla.redhat.com/show_bug.cgi?id=1593462
 - name: restart dbus
   command: "pct exec {{ vmid }} -- systemctl restart dbus"
+# https://serverfault.com/questions/792486/ssh-connection-takes-forever-to-initiate-stuck-at-pledge-network
+- name: restart systemd-logind
+  command: "pct exec {{ vmid }} -- systemctl restart systemd-logind"
 - name: restart oddjobd
   command: "pct exec {{ vmid }} -- systemctl restart oddjobd"
