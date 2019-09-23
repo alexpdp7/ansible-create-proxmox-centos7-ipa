@@ -21,7 +21,7 @@
     remote_src: yes
     src: "/etc/pve/lxc/{{ vmid }}.conf"
     dest: /tmp/cpci
-  when: "{{ unprivileged|default(False) }}"
+  when: unprivileged|default(False)
 - name: set id mappings {{ hostname }}
   blockinfile:
     path: /tmp/cpci
@@ -30,10 +30,10 @@
       lxc.idmap = g 0 100000 65536
       lxc.idmap = u {{ ipa_idrange_start }} {{ ipa_idrange_start }} {{ ipa_idrange_size }}
       lxc.idmap = g {{ ipa_idrange_start }} {{ ipa_idrange_start }} {{ ipa_idrange_size }}
-  when: "{{ unprivileged|default(False) }}"
+  when: unprivileged|default(False)
 - name: set id mappings {{ hostname }} copy in
   command: "cp /tmp/cpci /etc/pve/lxc/{{ vmid }}.conf"
-  when: "{{ unprivileged|default(False) }}"
+  when: unprivileged|default(False)
 - name: start container
   shell: "{ pct status {{ vmid }} | grep running ; } || pct start {{ vmid }}"
 - name: wait for networking to come up
