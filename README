@@ -14,6 +14,7 @@ Typical Playbook usage:
         ipa_domain: "{{ ipa_domain_name }}"
         ipa_username: admin
         ipa_password: "{{ ipa_admin_password }}"
+        centos_version: 8  # 7 is the default
 
 I keep IPA data on group_vars/all/(vars|vault) and proxmox_vmid/root_password on
 host_vars/<host>/(vars|vault).

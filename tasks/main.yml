@@ -1,11 +1,11 @@
 ---
-- name: download c7 container
-  command: "pveam download local centos-7-default_20171212_amd64.tar.xz"
+- name: download centos container
+  command: "pveam download local {{ centos_templates[centos_version] }}_amd64.tar.xz"
   args:
-    creates: "/var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz"
+    creates: "/var/lib/vz/template/cache/{{ centos_templates[centos_version] }}_amd64.tar.xz"
 - name: create host {{ hostname }}
   command: >
-    pct create {{ vmid }} /var/lib/vz/template/cache/centos-7-default_20171212_amd64.tar.xz
+    pct create {{ vmid }} /var/lib/vz/template/cache/{{ centos_templates[centos_version] }}_amd64.tar.xz
         -storage local-zfs
         -hostname {{ hostname }}
         -net0 name=eth0,bridge=vmbr0,ip=dhcp
@@ -43,6 +43,11 @@
   command: "pct exec {{ vmid }} -- chpasswd"
   args:
     stdin: "root:{{ root_password }}"
+- name: fix hosts
+  command: "pct exec {{ vmid }} -- sed -i 's/^.*LXC_NAME.*$//' /etc/hosts"
+- name: fix hostname in nm
+  command: "pct exec {{ vmid }} -- sh -c \"nmcli general hostname {{ hostname }} ; nmcli c down 'System eth0' ; nmcli c up 'System eth0'\""
+  when: centos_version == 8
 - name: install ssh ipa sudo
   command: "pct exec {{ vmid }} -- yum install -y openssh-server ipa-client sudo"
 - name: enable ssh server
