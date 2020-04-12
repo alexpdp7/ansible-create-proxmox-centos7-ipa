@@ -12,6 +12,7 @@
         -onboot 1
         -memory {{ memory|default(512) }}
         -swap {{ swap|default(512) }}
+        -rootfs local-zfs:{{ disk|default(4) }}
         {{ "-features nesting=1,keyctl=1 --unprivileged" if unprivileged|default(False) else "" }}
         {{ extra_opts|default() }}
   args:
