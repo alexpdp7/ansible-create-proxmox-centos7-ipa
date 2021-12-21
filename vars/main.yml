@@ -1,5 +1,5 @@
 ---
 centos_templates:
   7: centos-7-default_20190926
-  8: centos-8-default_20201210
+  8: rockylinux-8-default_20210929
 centos_version: 7

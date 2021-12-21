@@ -46,11 +46,15 @@
     stdin: "root:{{ root_password }}"
 - name: fix hosts
   command: "pct exec {{ vmid }} -- sed -i 's/^.*LXC_NAME.*$//' /etc/hosts"
+- name: install ssh ipa sudo NetworkManager
+  command: "pct exec {{ vmid }} -- yum install -y openssh-server ipa-client sudo NetworkManager"
+- name: enable NetworkManager
+  command: "pct exec {{ vmid }} -- systemctl enable NetworkManager"
+- name: start NetworkManager
+  command: "pct exec {{ vmid }} -- systemctl start NetworkManager"
 - name: fix hostname in nm
   command: "pct exec {{ vmid }} -- sh -c \"nmcli general hostname {{ hostname }} ; nmcli c down 'System eth0' ; nmcli c up 'System eth0'\""
   when: centos_version == 8
-- name: install ssh ipa sudo
-  command: "pct exec {{ vmid }} -- yum install -y openssh-server ipa-client sudo"
 - name: enable ssh server
   command: "pct exec {{ vmid }} -- systemctl enable sshd"
 - name: start ssh server
