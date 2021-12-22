@@ -38,3 +38,5 @@ You can use an "unprivileged" boolean parameter to create an unprivileged contai
 https://bugzilla.proxmox.com/show_bug.cgi?id=2036
 https://bugzilla.redhat.com/show_bug.cgi?id=1589968
 https://bugs.centos.org/view.php?id=14897
+
+Also, you cannot use ZFS mountpoints inside unprivileged containers, at least in EL8.
