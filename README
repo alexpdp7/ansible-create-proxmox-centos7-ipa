@@ -1,3 +1,5 @@
+Deprecated by https://github.com/alexpdp7/alexpdp7/tree/master/personal_infra/playbooks/roles/proxmox_create_lxc , https://github.com/alexpdp7/alexpdp7/tree/master/personal_infra/playbooks/roles/join_ipa
+
 Just a small task to provision a Proxmox LXC container joined to FreeIPA.
 
 Typical Playbook usage:
